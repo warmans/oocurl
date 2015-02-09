@@ -29,7 +29,7 @@ class Multi
         return $this->multiHandle;
     }
 
-    public function addHandle(SessionHandle $sessionHandle)
+    public function addHandle(Session $sessionHandle)
     {
         return curl_multi_add_handle($this->multiHandle, $sessionHandle->getResource());
     }
@@ -58,7 +58,7 @@ class Multi
     {
         $info = curl_multi_info_read($this->multiHandle);
         if ($info) {
-            return new Multi\Result($info['msg'], $info['result'], new SessionHandle($info['handle']));
+            return new Multi\Result($info['msg'], $info['result'], new Session($info['handle']));
         }
         return false;
     }

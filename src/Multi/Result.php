@@ -1,7 +1,7 @@
 <?php
 namespace OOCURL\Multi;
 
-use OOCURL\SessionHandle;
+use OOCURL\Session;
 
 class Result
 {
@@ -16,20 +16,20 @@ class Result
     private $result;
 
     /**
-     * @var SessionHandle
+     * @var Session
      */
-    private $sessionHandle;
+    private $session;
 
     /**
      * @param int $msg
      * @param int $result
-     * @param SessionHandle $handle
+     * @param Session $session
      */
-    public function __construct ($msg, $result, SessionHandle $handle)
+    public function __construct ($msg, $result, Session $session)
     {
         $this->msg = $msg;
         $this->result = $result;
-        $this->sessionHandle = $handle;
+        $this->session = $session;
     }
 
     public function isResultOk()
@@ -49,11 +49,11 @@ class Result
 
     public function getBody()
     {
-        return curl_multi_getcontent($this->sessionHandle->getResource());
+        return curl_multi_getcontent($this->session->getResource());
     }
 
     public function close()
     {
-        $this->sessionHandle->close();
+        $this->session->close();
     }
 }

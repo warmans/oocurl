@@ -1,11 +1,14 @@
 <?php
 namespace OOCURL;
 
-class SessionHandle
+class Session
 {
+    /**
+     * @var resource
+     */
     private $handle;
 
-    public function __construct($handle = null)
+    public function __construct($handle)
     {
         $this->handle = $handle;
     }
