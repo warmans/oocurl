@@ -1,12 +1,26 @@
 <?php
 namespace OOCURL;
 
+/**
+ * Executes multiple sessions in parallel.
+ *
+ * @package OOCURL
+ */
 class Multi
 {
+    /**
+     * @var resource
+     */
     private $multiHandle;
 
-    private $running = false;
+    /**
+     * @var int
+     */
+    private $running = 0;
 
+    /**
+     * @var int|null
+     */
     private $status = null;
 
     public function __construct()
@@ -14,31 +28,50 @@ class Multi
         $this->multiHandle = curl_multi_init();
     }
 
+    /**
+     * @return int|null
+     */
     public function getStatusCode()
     {
         return $this->status;
     }
 
-    public function isRunning()
+    /**
+     * @return bool
+     */
+    public function getNumRunning()
     {
         return $this->running;
     }
 
+    /**
+     * @return resource
+     */
     public function getResource()
     {
         return $this->multiHandle;
     }
 
-    public function addHandle(Session $sessionHandle)
+    /**
+     * @param Session $session
+     * @return int
+     */
+    public function addSession(Session $session)
     {
-        return curl_multi_add_handle($this->multiHandle, $sessionHandle->getResource());
+        return curl_multi_add_handle($this->multiHandle, $session->getResource());
     }
 
+    /**
+     * Close multi session.
+     */
     public function close()
     {
         curl_multi_close($this->multiHandle);
     }
 
+    /**
+     * @return int|null
+     */
     public function exec()
     {
         do {
@@ -48,23 +81,32 @@ class Multi
         return $this->status;
     }
 
+    /**
+     * @param float $timeout
+     * @return int
+     */
     public function select($timeout = 1.0)
     {
         $res = curl_multi_select($this->multiHandle, $timeout);
         return $res;
     }
 
+    /**
+     * Attempt to get a result instance. May be called multiple times.
+     *
+     * @return null|Multi\Result
+     */
     public function fetchResult()
     {
         $info = curl_multi_info_read($this->multiHandle);
         if ($info) {
             return new Multi\Result($info['msg'], $info['result'], new Session($info['handle']));
         }
-        return false;
+        return null;
     }
 
     /**
-     * @param float $timeout
+     * @param float $timeout the timeout applied to the select which may be called multiple times.
      * @return array
      */
     public function fetchAllResults($timeout = 1.0)
@@ -92,7 +134,7 @@ class Multi
                 $results[] = $result;
             }
 
-        } while ($this->running > 0);
+        } while ($this->getNumRunning() > 0);
 
         return $results;
     }

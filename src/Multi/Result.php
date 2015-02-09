@@ -3,6 +3,11 @@ namespace OOCURL\Multi;
 
 use OOCURL\Session;
 
+/**
+ * Result of a multi exec. Can be used to obtain the result body.
+ *
+ * @package OOCURL\Multi
+ */
 class Result
 {
     /**
@@ -30,11 +35,6 @@ class Result
         $this->msg = $msg;
         $this->result = $result;
         $this->session = $session;
-    }
-
-    public function isResultOk()
-    {
-        return ($this->result === CURLE_OK);
     }
 
     public function getMsgCode()
